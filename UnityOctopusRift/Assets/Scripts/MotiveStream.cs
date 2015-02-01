@@ -56,7 +56,16 @@ namespace AssemblyCSharp
 					currentFrame = natNetPkt_parentFrame;
 				}
 			}
-
+			/*
+			natNetPkt.rigidBodies [0].pos.x *= -1;
+			int i = 0;
+			foreach (RigidBody rb in natNetPkt.rigidBodies) {
+				string format = System.String.Format("Rigid Body {0}: ({1:F2}, {2:F2}, {3:F3})\n",i,rb.pos.x,rb.pos.y,rb.pos.z);
+				Debug.Log (format);
+				i++;
+			}
+			*/
+			Debug.Log("received packet");
 			ovrCamera.transform.position = natNetPkt.rigidBodies [0].pos.AsVector3;
 			ovrCamera.transform.rotation = natNetPkt.rigidBodies [0].rot;
 		}
