@@ -123,12 +123,11 @@ namespace AssemblyCSharp
 			loadPacket (aPkt.circBuffer [(aPkt.n - 2 + bSize) % bSize], ref t1);
 			loadPacket (aPkt.circBuffer [(aPkt.n - 3 + bSize) % bSize], ref t2);
 			
-			xpolate (ref curr.rigidBodies [0].pos, t1.rigidBodies [0].pos, t2.rigidBodies [0].pos);
-			curr.rigidBodies [0].pos.z = -curr.rigidBodies [0].pos.z; // Invert the z values to match real world vector.
+			//xpolate (ref curr.rigidBodies [0].pos, t1.rigidBodies [0].pos, t2.rigidBodies [0].pos);
 
 			Debug.Log ("ObjectX: " + curr.rigidBodies [0].pos.AsVector3.x);
-			
-			ovrCamera.transform.localPosition = curr.rigidBodies [0].pos.AsVector3;
+			curr.rigidBodies [0].pos.x *= -1;
+			ovrCamera.transform.position = curr.rigidBodies [0].pos.AsVector3;
 			ovrCamera.transform.rotation = curr.rigidBodies [0].rot;
 			
 			/*
