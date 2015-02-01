@@ -674,7 +674,7 @@ GameObject:
   - 4: {fileID: 952712690}
   - 114: {fileID: 952712689}
   m_Layer: 0
-  m_Name: TTStreamObject
+  m_Name: MotiveStreamObject
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -688,11 +688,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 952712688}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c34d0c21db35e431881eb34a676a19e4, type: 3}
+  m_Script: {fileID: 11500000, guid: c718c0563d21c4546a53ee031b60302d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  guitext: {fileID: 0}
-  RMMat: {fileID: 0}
   ovrCamera: {fileID: 1670410271}
 --- !u!4 &952712690
 Transform:
