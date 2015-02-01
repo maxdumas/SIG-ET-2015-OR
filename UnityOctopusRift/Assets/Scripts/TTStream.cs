@@ -13,6 +13,7 @@ namespace AssemblyCSharp
     /// <summary>The main class to control the behavior of the entire project.</summary>
 	class TTStream : MonoBehaviour
 	{
+		public TextMesh guitext;
 		public static int trackingPort = 1511;
         /// <summary>The material of the marker, which identifies the Pliers.</summary>
 		public Material RMMat = null; 
@@ -124,10 +125,12 @@ namespace AssemblyCSharp
 			
 			xpolate (ref curr.rigidBodies [0].pos, t1.rigidBodies [0].pos, t2.rigidBodies [0].pos);
 			curr.rigidBodies [0].pos.z = -curr.rigidBodies [0].pos.z; // Invert the z values to match real world vector.
+
+			Debug.Log ("ObjectX: " + curr.rigidBodies [0].pos.AsVector3.x);
 			
 			ovrCamera.transform.localPosition = curr.rigidBodies [0].pos.AsVector3;
 			ovrCamera.transform.rotation = curr.rigidBodies [0].rot;
-
+			
 			/*
 			if (curr.ringMarkers.Length == 1) { // If only one of the two markers of the pliers, is identified (special case)
 				if (t1.ringMarkers.Length > 0 && t2.ringMarkers.Length > 0)

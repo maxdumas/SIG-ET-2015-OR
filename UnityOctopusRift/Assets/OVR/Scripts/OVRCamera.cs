@@ -175,6 +175,7 @@ public class OVRCamera : MonoBehaviour
 	/// </summary>
 	void SetCameraOrientation()
 	{	
+		return;
 #if (!UNITY_ANDROID || UNITY_EDITOR)
 		// Main camera has a depth of 0, so it will be rendered first
 		if(camera.depth == 0.0f)
@@ -209,6 +210,7 @@ public class OVRCamera : MonoBehaviour
 			// Get camera orientation and position from vision
 			Quaternion camOrt = Quaternion.identity;
 			Vector3 camPos = Vector3.zero;
+			/*
 			OVRDevice.GetCameraPositionOrientation(ref camPos, ref camOrt);
 
 			if (CameraController.EnablePosition)
@@ -222,7 +224,8 @@ public class OVRCamera : MonoBehaviour
 			}
 			
 			// This needs to go as close to reading Rift orientation inputs
-			OVRDevice.ProcessLatencyInputs();			
+			OVRDevice.ProcessLatencyInputs();		
+			*/
 		}
 		
 		// Calculate the rotation Y offset that is getting updated externally
@@ -245,7 +248,7 @@ public class OVRCamera : MonoBehaviour
 		
 		// * * *
 		// Update camera rotation
-		camera.transform.rotation = q;
+		// camera.transform.rotation = q;
 		
 		// * * *
 		// Update camera position (first add Offset to parent transform)
@@ -295,7 +298,7 @@ public class OVRCamera : MonoBehaviour
 		// move eyes out by x (IPD)
 		Vector3 newEyePos = Vector3.zero;
 		newEyePos.x = EyePosition.x;
-		camera.transform.localPosition += camera.transform.localRotation * newEyePos;
+		// camera.transform.localPosition += camera.transform.localRotation * newEyePos;
 #else
 		// NOTE: On Android, camera orientation is set from OVRCameraController Update()
 #endif
@@ -423,7 +426,7 @@ public class OVRCamera : MonoBehaviour
 	{
 		Vector3 camPos  = Vector3.zero;
 		Quaternion camO = Quaternion.identity;
-		OVRDevice.GetCameraPositionOrientation(ref camPos, ref camO);
+		// OVRDevice.GetCameraPositionOrientation(ref camPos, ref camO);
 
 		CameraPositionOffset = Vector3.Scale(camPos, posScale) - posOffset;
 

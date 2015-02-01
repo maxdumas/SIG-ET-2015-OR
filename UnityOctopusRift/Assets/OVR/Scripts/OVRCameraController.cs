@@ -50,6 +50,7 @@ public class OVRCameraController : MonoBehaviour
 	private const int EyeBufferCount = 3;	// triple buffer for max overlap
 	private const int CurrEyeBufferIdx = 0;
 	private const int NextEyeBufferIdx = 1;
+	private const int totalPerSec = 0;
 	private int[] EyeBufferNum = { 0, 0 };	// curr frame, next frame
 	static private RenderTexture[]	CameraTextures = new RenderTexture[EyeBufferCount * 2];	// one for each eye
 	static private int[] CameraTextureIds = new int[EyeBufferCount * 2];            		// one for each eye
@@ -621,10 +622,12 @@ public class OVRCameraController : MonoBehaviour
 		CameraLeft.fieldOfView = fov;
 
 		// Change the co-ordinate system from right-handed to Unity left-handed
-		CameraOrientation.w = w;
-		CameraOrientation.x = -x;
-		CameraOrientation.y = -y;
-		CameraOrientation.z = z;
+
+		CameraOrientation.w = gameObject.transform.rotation.w;
+		CameraOrientation.x = gameObject.transform.rotation.x;
+		CameraOrientation.y = -gameObject.transform.rotation.y;
+		CameraOrientation.z = -gameObject.transform.rotation.z;
+
 
 		// We are going to cycle between three render targets for the cameras
 		// so the async time warp can use one to render the distorted screen, have
@@ -927,7 +930,7 @@ public class OVRCameraController : MonoBehaviour
 	/// <param name="orientationOffset">Orientation offset.</param>
 	public void SetOrientationOffset(Quaternion orientationOffset)
 	{
-		OrientationOffset = orientationOffset;
+		//OrientationOffset = orientationOffset;
 	}
 	
 	/// <summary>
@@ -944,7 +947,7 @@ public class OVRCameraController : MonoBehaviour
 	/// <param name="yRotation">Y rotation.</param>
 	public void SetYRotation(float yRotation)
 	{
-		YRotation = yRotation;
+		//YRotation = yRotation;
 	}
 
 	/// <summary>
@@ -962,7 +965,7 @@ public class OVRCameraController : MonoBehaviour
 	/// <param name="xRotation">X rotation.</param>
     public void SetXRotation(float xRotation)
     {
-        XRotation = xRotation;
+        //XRotation = xRotation;
     }	
 	
 	/// <summary>

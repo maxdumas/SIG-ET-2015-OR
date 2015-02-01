@@ -94,6 +94,7 @@
      <Compile Include="Assets\Scripts\FPSText.cs" />
      <Compile Include="Assets\Scripts\MeshGenerator.cs" />
      <Compile Include="Assets\Scripts\NatNetTypes.cs" />
+     <Compile Include="Assets\Scripts\PosText.cs" />
      <Compile Include="Assets\Scripts\TTStream.cs" />
      <None Include="Assets\OVR\OVRImageEffects\Resources\OVRLensCorrection_Mesh.shader" />
      <None Include="Assets\OVR\OVRImageEffects\Resources\OVRLensCorrection_Mesh_CA.shader" />

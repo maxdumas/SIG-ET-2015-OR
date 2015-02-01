@@ -1,31 +1,31 @@
 =============== 
 Unity generated
 ===============
-Temp/
-Library/
+UnityOctopusRift/Temp/
+UnityOctopusRift/Library/
 
 =====================================
 Visual Studio / MonoDevelop generated
 =====================================
-ExportedObj/
-obj/
-*.svd
-*.userprefs
-/*.csproj
-*.pidb
-*.suo
-/*.sln
-*.user
-*.unityproj
-*.booproj
+UnityOctopusRift/ExportedObj/
+UnityOctopusRift/obj/
+UnityOctopusRift/*.svd
+UnityOctopusRift/*.userprefs
+UnityOctopusRift/*.csproj
+UnityOctopusRift/*.pidb
+UnityOctopusRift/*.suo
+UnityOctopusRift/*.sln
+UnityOctopusRift/*.user
+UnityOctopusRift/*.unityproj
+UnityOctopusRift/*.booproj
 
 ============
 OS generated
 ============
-.DS_Store
-.DS_Store?
-._*
-.Spotlight-V100
-.Trashes
-ehthumbs.db
-Thumbs.db
+UnityOctopusRift/.DS_Store
+UnityOctopusRift/.DS_Store?
+UnityOctopusRift/._*
+UnityOctopusRift/.Spotlight-V100
+UnityOctopusRift/.Trashes
+UnityOctopusRift/ehthumbs.db
+UnityOctopusRift/Thumbs.db
