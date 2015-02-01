@@ -93,6 +93,7 @@
      <Compile Include="Assets\OVR\Scripts\OVRVolumeControl.cs" />
      <Compile Include="Assets\Scripts\FPSText.cs" />
      <Compile Include="Assets\Scripts\MeshGenerator.cs" />
+     <Compile Include="Assets\Scripts\MotiveStream.cs" />
      <Compile Include="Assets\Scripts\NatNetTypes.cs" />
      <Compile Include="Assets\Scripts\PosText.cs" />
      <Compile Include="Assets\Scripts\TTStream.cs" />
