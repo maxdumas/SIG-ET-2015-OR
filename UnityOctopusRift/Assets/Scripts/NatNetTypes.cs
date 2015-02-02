@@ -22,21 +22,20 @@ namespace AssemblyCSharp
 		public uint nSkeletons;
 		public float latency;
 		public uint timeCode;
-		public Marker[] ringMarkers; // The markers, which identify the pliers.
 		
-		public void InitMarkerSets ()
+		public void InitMarkerSets (int max)
 		{
-			markerSets = new MarkerSet[nMarkerSet];
+			markerSets = new MarkerSet[max];
 		}
 
-		public void InitOtherMarkers ()
+		public void InitOtherMarkers (int max)
 		{
-			otherMarkers = new Marker[nOtherMarkers];
+			otherMarkers = new Marker[max];
 		}
 
-		public void InitRigidBodies ()
+		public void InitRigidBodies (int max)
 		{
-			rigidBodies = new RigidBody[nRigidBodies];
+			rigidBodies = new RigidBody[max];
 		}
 	}
 
@@ -81,9 +80,9 @@ namespace AssemblyCSharp
 		public uint nMarkers;
 		public Marker[] markers;
 
-		public void InitMarkers ()
+		public void InitMarkers (int max)
 		{
-			markers = new Marker[nMarkers];
+			markers = new Marker[max];
 		}
 	}
 
@@ -99,12 +98,13 @@ namespace AssemblyCSharp
 		public int[] MarkerIDs;
 		public float[] MarkerSizes;
 		public float MeanError;
+		public ushort bodyParams;
 
-		public void InitArrays ()
+		public void InitArrays (int max)
 		{
-			Markers = new Marker[nMarkers];
-			MarkerIDs = new int[nMarkers];
-			MarkerSizes = new float[nMarkers];
+			Markers = new Marker[max];
+			MarkerIDs = new int[max];
+			MarkerSizes = new float[max];
 		}
 	}
 

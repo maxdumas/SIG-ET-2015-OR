@@ -39,7 +39,24 @@ namespace AssemblyCSharp
 		private void Start() {
 			natNetPkt_filled = false;
 			natNetPkt_parentFrame = 0;
+
+			int maxMarkerSets = 20;
+			int maxMarkersPerSet = 8;
+			int maxOtherMarkers = 10;
+			int maxRigidBodies = 10;
+			int maxMarkersPerRigidBody = 8;
+
 			natNetPkt = new NatNetPkt ();
+			natNetPkt.InitMarkerSets (maxMarkerSets);
+			for(int i=0; i<maxMarkerSets; i++) {
+				natNetPkt.markerSets [i].InitMarkers (maxMarkersPerSet);
+			}
+			natNetPkt.InitOtherMarkers (maxOtherMarkers);
+			natNetPkt.InitRigidBodies (maxRigidBodies);
+			for(int i=0; i<maxRigidBodies; i++) {
+				natNetPkt.rigidBodies [i].InitArrays (maxMarkersPerRigidBody);
+			}
+
 			currentFrame = 0;
 			thread = new System.Threading.Thread(ThreadRun);
 			thread.Start ();
@@ -52,22 +69,11 @@ namespace AssemblyCSharp
 					return;
 				}
 				if(natNetPkt_parentFrame != currentFrame) {
-					Debug.Log (currentFrame + " | " + natNetPkt_parentFrame  + " ObjectX: " + natNetPkt.rigidBodies [0].pos.AsVector3.x);
 					currentFrame = natNetPkt_parentFrame;
 				}
+				ovrCamera.transform.position = natNetPkt.rigidBodies [0].pos.AsVector3;
+				ovrCamera.transform.rotation = natNetPkt.rigidBodies [0].rot;
 			}
-			/*
-			natNetPkt.rigidBodies [0].pos.x *= -1;
-			int i = 0;
-			foreach (RigidBody rb in natNetPkt.rigidBodies) {
-				string format = System.String.Format("Rigid Body {0}: ({1:F2}, {2:F2}, {3:F3})\n",i,rb.pos.x,rb.pos.y,rb.pos.z);
-				Debug.Log (format);
-				i++;
-			}
-			*/
-			Debug.Log("received packet");
-			ovrCamera.transform.position = natNetPkt.rigidBodies [0].pos.AsVector3;
-			ovrCamera.transform.rotation = natNetPkt.rigidBodies [0].rot;
 		}
 		private void ThreadRun ()
 		{
@@ -95,7 +101,7 @@ namespace AssemblyCSharp
 					Array.Copy (receivedBytes, 0, asyncPkt.buffer, 0, receivedBytes.Length);
 				} else {
 					Array.Copy (receivedBytes, 0, asyncPkt.buffer, asyncPkt.nBytesReceived - 1, receivedBytes.Length);
-					asyncPkt.nBytesReceived = receivedBytes.Length;
+					asyncPkt.nBytesReceived += receivedBytes.Length;
 				}
 				if (asyncPkt.nBytesReceived - asyncPkt.nBytes >= 0) {
 					lock(natNetPkt_lock) {
@@ -117,30 +123,28 @@ namespace AssemblyCSharp
 			readPtrToObj (ref ptr, ref pkt.nBytes);
 			readPtrToObj (ref ptr, ref pkt.frame);
 			readPtrToObj (ref ptr, ref pkt.nMarkerSet);
-			pkt.InitMarkerSets ();
+			
 			for (int i = 0; i < pkt.nMarkerSet; i++) {
 				pkt.markerSets [i].name = Marshal.PtrToStringAnsi (ptr);
 				ptr = new IntPtr (ptr.ToInt64 () + pkt.markerSets [i].name.Length + 1);
 				
 				readPtrToObj (ref ptr, ref pkt.markerSets [i].nMarkers);
-				pkt.markerSets [i].InitMarkers ();
+				
 				for (int j = 0; j < pkt.markerSets[i].nMarkers; j++) {
 					readPtrToObj (ref ptr, ref pkt.markerSets [i].markers [j]);
 				}
 			}
 			readPtrToObj (ref ptr, ref pkt.nOtherMarkers);
-			pkt.InitOtherMarkers ();
+			
 			for (int i = 0; i < pkt.nOtherMarkers; i++) {
 				readPtrToObj (ref ptr, ref pkt.otherMarkers [i]);
 			}
-			readPtrToObj (ref ptr, ref pkt.nRigidBodies);
-			pkt.InitRigidBodies ();
+			readPtrToObj (ref ptr, ref pkt.nRigidBodies);			
 			for (int i = 0; i < pkt.nRigidBodies; i++) {
 				readPtrToObj (ref ptr, ref pkt.rigidBodies [i].ID);
 				readPtrToObj (ref ptr, ref pkt.rigidBodies [i].pos);
 				readPtrToObj (ref ptr, ref pkt.rigidBodies [i].rot);
 				readPtrToObj (ref ptr, ref pkt.rigidBodies [i].nMarkers);
-				pkt.rigidBodies [i].InitArrays ();
 				for (int j = 0; j < pkt.rigidBodies[i].nMarkers; j++) {
 					readPtrToObj (ref ptr, ref pkt.rigidBodies [i].Markers [j]);
 				}
@@ -151,6 +155,7 @@ namespace AssemblyCSharp
 					readPtrToObj (ref ptr, ref pkt.rigidBodies [i].MarkerSizes [j]);
 				}
 				readPtrToObj (ref ptr, ref pkt.rigidBodies [i].MeanError);
+				readPtrToObj (ref ptr, ref pkt.rigidBodies [i].bodyParams);
 			}
 			readPtrToObj (ref ptr, ref pkt.nSkeletons);
 			readPtrToObj (ref ptr, ref pkt.latency);
