@@ -12,6 +12,10 @@ namespace AssemblyCSharp
 	class MotiveStream : MonoBehaviour
 	{
 		public OVRCameraController ovrCamera;
+		public PlayerSphereController playerSphereController;
+		public int nPlayers;
+		public float yAdjust;
+		public float zAdjust;
 		private AsyncPkt asyncPkt; // The packet received/filled asychronously.
 		private NatNetPkt natNetPkt; // The parsed Motive packet.
 		private System.Object natNetPkt_lock = new System.Object();
@@ -22,6 +26,12 @@ namespace AssemblyCSharp
 		private IPEndPoint remoteIPEndPoint;
 		private System.Threading.Thread thread = null;
 		private bool stopReceive; // Do we stop receiving packets?
+
+		// timers for calculating packet rate
+		private float accum;
+		private int nPackets;
+		private int nFrames;
+
 		private class AsyncPkt
 		{
 			public ushort msgId;
@@ -37,6 +47,10 @@ namespace AssemblyCSharp
 			}
 		}
 		private void Start() {
+			accum = 0;
+			nPackets = 0;
+			nFrames = 0;
+
 			natNetPkt_filled = false;
 			natNetPkt_parentFrame = 0;
 
@@ -63,7 +77,8 @@ namespace AssemblyCSharp
 		}
 		// Handle new thread data / invoke Unity routines outside of the socket thread.
 		private void Update() {
-			lock (natNetPkt_lock) {
+			accum += Time.deltaTime;
+			//lock (natNetPkt_lock) {
 				// check for a change in msgId
 				if(natNetPkt_filled == false) {
 					return;
@@ -71,9 +86,35 @@ namespace AssemblyCSharp
 				if(natNetPkt_parentFrame != currentFrame) {
 					currentFrame = natNetPkt_parentFrame;
 				}
-				ovrCamera.transform.position = natNetPkt.rigidBodies [0].pos.AsVector3;
 				ovrCamera.transform.rotation = natNetPkt.rigidBodies [0].rot;
+				Vector3 newPos = natNetPkt.rigidBodies [0].pos.AsVector3;
+				newPos.x *= -1;
+				newPos.y += yAdjust;
+				newPos += zAdjust * Vector3.Normalize(ovrCamera.transform.forward);
+				ovrCamera.transform.position = newPos;
+				ovrCamera.transform.rotation = natNetPkt.rigidBodies [0].rot;
+
+				Vector3[] positions = new Vector3[nPlayers];
+				Quaternion[] rotations = new Quaternion[nPlayers];
+				for (int i = 0; i < nPlayers; i++) {
+					Vector3 pos = natNetPkt.rigidBodies[i].pos.AsVector3;
+					pos.x *= -1;
+					positions[i] = pos;
+					rotations[i] = natNetPkt.rigidBodies[i].rot;
+				}
+				playerSphereController.SetBodyData(positions, rotations);
+
+				
+			//}
+			float round_accum = (float)Math.Floor(accum);
+			if (round_accum > 0) {
+				accum -= round_accum;
+				Debug.Log ("packets per second: " + ((float)nPackets / round_accum).ToString());
+				Debug.Log ("frames per second: " + ((float)nFrames / round_accum).ToString());
+				nPackets = 0;
+				nFrames = 0;
 			}
+			nFrames++;
 		}
 		private void ThreadRun ()
 		{
@@ -104,11 +145,11 @@ namespace AssemblyCSharp
 					asyncPkt.nBytesReceived += receivedBytes.Length;
 				}
 				if (asyncPkt.nBytesReceived - asyncPkt.nBytes >= 0) {
-					lock(natNetPkt_lock) {
+					//lock(natNetPkt_lock) {
 						loadPacket (asyncPkt.buffer, ref natNetPkt);
 						natNetPkt_parentFrame++;
 						asyncPkt.nBytes = 0;
-					}
+					//}
 				}
 				if (stopReceive) {
 					break;
@@ -118,6 +159,7 @@ namespace AssemblyCSharp
 		// Read the current raw byte[] and load the values into the NatNatPkt.
 		private void loadPacket (byte[] buffer, ref NatNetPkt pkt)
 		{
+			nPackets++;
 			IntPtr ptr = GCHandle.Alloc (buffer, GCHandleType.Pinned).AddrOfPinnedObject ();
 			readPtrToObj (ref ptr, ref pkt.ID);
 			readPtrToObj (ref ptr, ref pkt.nBytes);

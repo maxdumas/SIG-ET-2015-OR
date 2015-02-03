@@ -5,6 +5,8 @@ Project("{96823E42-851A-7F72-7260-1273DA1D9C13}") = "UnityOctopusRift", "Assembl
 EndProject
 Project("{96823E42-851A-7F72-7260-1273DA1D9C13}") = "UnityOctopusRift", "Assembly-CSharp-Editor.csproj", "{43C1688A-D1F4-2E45-E550-59044E0D5D06}"
 EndProject
+Project("{96823E42-851A-7F72-7260-1273DA1D9C13}") = "UnityOctopusRift", "Assembly-UnityScript.unityproj", "{7E65A345-33FE-9BBB-7172-60889B94F0EC}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -19,11 +21,15 @@ Global
 		{43C1688A-D1F4-2E45-E550-59044E0D5D06}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{43C1688A-D1F4-2E45-E550-59044E0D5D06}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{43C1688A-D1F4-2E45-E550-59044E0D5D06}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7E65A345-33FE-9BBB-7172-60889B94F0EC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7E65A345-33FE-9BBB-7172-60889B94F0EC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7E65A345-33FE-9BBB-7172-60889B94F0EC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7E65A345-33FE-9BBB-7172-60889B94F0EC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
-																											GlobalSection(MonoDevelopProperties) = preSolution
+																														GlobalSection(MonoDevelopProperties) = preSolution
 		StartupItem = Assembly-CSharp.csproj
 		Policies = $0
 		$0.TextStylePolicy = $1
