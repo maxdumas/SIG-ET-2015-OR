@@ -11,7 +11,7 @@ namespace AssemblyCSharp
     struct NatNetPkt
 	{
         public ushort ID;
-		public ushort nBytes;
+		public ushort nBytes; // Does not count the ID or nBytes field
 		public uint frame;
 		public uint nMarkerSet;
 		public MarkerSet[] markerSets;

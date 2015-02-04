@@ -16,13 +16,10 @@ namespace AssemblyCSharp
 		public int nPlayers;
 		public float zAdjust;
 		public int id;
-		private AsyncPkt asyncPkt; // The packet received/filled asychronously.
+		private SocketInfo socketInfo; // The packet received/filled asychronously.
 		private NatNetPkt natNetPkt; // The parsed Motive packet.
-		private bool natNetPkt_filled;
-		private uint natNetPkt_parentFrame;
-		public uint currentFrame;
-		private UdpClient udpClient;
-		private IPEndPoint remoteIPEndPoint;
+		private uint natNetPkt_SequenceNumber;
+		private IPEndPoint ipEndPoint;
 		private System.Threading.Thread thread = null;
 		private bool stopReceive; // Do we stop receiving packets?
 
@@ -31,27 +28,34 @@ namespace AssemblyCSharp
 		private int nPackets;
 		private int nFrames;
 
-		private class AsyncPkt
+		private class SocketInfo
 		{
 			public ushort msgId;
-			public byte[] buffer;
 			public ushort nBytes;
 			public int nBytesReceived;
-			public AsyncPkt ()
+			public uint incomingFrame;
+			public uint currentFrame;
+			public Socket socket;
+			public byte[] temp;
+			public byte[] currentPacket;
+			public byte[] inBuffer;
+			public SocketInfo ()
 			{
+				this.currentPacket = new byte[1000];
+				this.inBuffer = new byte[1000];
 				this.msgId = 0;
 				this.nBytes = 0;
+				this.currentFrame = 0;
 				this.nBytesReceived = 0;
-				buffer = new byte[10240]; // 10 KB
 			}
 		}
+
 		private void Start() {
 			accum = 0;
 			nPackets = 0;
 			nFrames = 0;
 
-			natNetPkt_filled = false;
-			natNetPkt_parentFrame = 0;
+			natNetPkt_SequenceNumber = 0;
 
 			int maxMarkerSets = 20;
 			int maxMarkersPerSet = 8;
@@ -69,20 +73,14 @@ namespace AssemblyCSharp
 			for(int i=0; i<maxRigidBodies; i++) {
 				natNetPkt.rigidBodies [i].InitArrays (maxMarkersPerRigidBody);
 			}
-
-			currentFrame = 0;
 			thread = new System.Threading.Thread(ThreadRun);
 			thread.Start ();
 		}
 		// Handle new thread data / invoke Unity routines outside of the socket thread.
 		private void Update() {
 			accum += Time.deltaTime;
-			// check for a change in msgId
-			if(natNetPkt_filled == false) {
-				return;
-			}
-			if(natNetPkt_parentFrame != currentFrame) {
-				currentFrame = natNetPkt_parentFrame;
+			if (natNetPkt.frame != socketInfo.currentFrame) {
+				loadPacket (socketInfo.currentPacket, ref natNetPkt);
 			}
 			
 			Vector3 newPos = natNetPkt.rigidBodies [id].pos.AsVector3;
@@ -106,49 +104,42 @@ namespace AssemblyCSharp
 			}
 			playerSphereController.SetBodyData(positions, rotations);
 
-			float round_accum = (float)Math.Floor(accum * 4);
+			float round_accum = (float)Math.Floor(accum);
 			if (round_accum > 0) {
-				accum -= round_accum / 4f;
-				print ("packets per second: " + ((float)nPackets / round_accum * 4f).ToString());
-				print ("frames per second: " + ((float)nFrames / round_accum * 4f).ToString());
+				accum -= round_accum;
+				print ("packets per second: " + ((float)nPackets / round_accum).ToString());
+				print ("frames per second: " + ((float)nFrames / round_accum).ToString());
 				nPackets = 0;
 				nFrames = 0;
 			}
 
 			nFrames++;
 		}
+		// This thread handles incoming NatNet packets.
 		private void ThreadRun ()
 		{
 			stopReceive = false;
-			udpClient = new UdpClient ();
-			remoteIPEndPoint = new IPEndPoint (IPAddress.Any, 1511);
-			asyncPkt = new AsyncPkt ();
-			udpClient.Client.SetSocketOption (SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
-			udpClient.ExclusiveAddressUse = false;
-			udpClient.Client.Bind (remoteIPEndPoint);
+			socketInfo = new SocketInfo ();
+			Socket socket =new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
+			ipEndPoint = new IPEndPoint (IPAddress.Any, 1511);
+			socket.Bind (ipEndPoint);
 			IPAddress multicastAddr = IPAddress.Parse ("239.255.42.99");
-			udpClient.JoinMulticastGroup (multicastAddr);
-			udpClient.Client.ReceiveBufferSize = 512;
+			socket.SetSocketOption(SocketOptionLevel.IP, SocketOptionName.AddMembership, new MulticastOption(multicastAddr,IPAddress.Any));
 			while (true) {
-				byte[] receivedBytes = udpClient.Receive (ref remoteIPEndPoint);
-				if (receivedBytes.Length == 0) {
-					continue;
-				}
-				if (asyncPkt.nBytes == 0) {
-					asyncPkt.nBytesReceived = receivedBytes.Length;
-					IntPtr ptr = GCHandle.Alloc (receivedBytes, GCHandleType.Pinned).AddrOfPinnedObject ();
-					readPtrToObj<ushort> (ref ptr, ref asyncPkt.msgId);
-					readPtrToObj<ushort> (ref ptr, ref asyncPkt.nBytes);
-					asyncPkt.nBytes += 4;
-					Array.Copy (receivedBytes, 0, asyncPkt.buffer, 0, receivedBytes.Length);
-				} else {
-					Array.Copy (receivedBytes, 0, asyncPkt.buffer, asyncPkt.nBytesReceived - 1, receivedBytes.Length);
-					asyncPkt.nBytesReceived += receivedBytes.Length;
-				}
-				if (asyncPkt.nBytesReceived - asyncPkt.nBytes >= 0) {
-					loadPacket (asyncPkt.buffer, ref natNetPkt);
-					natNetPkt_parentFrame++;
-					asyncPkt.nBytes = 0;
+				socketInfo.nBytesReceived = socket.Receive (socketInfo.inBuffer);
+				if (socketInfo.nBytesReceived == 0) { continue; }
+				natNetPkt_SequenceNumber++;
+				nPackets++;
+				IntPtr ptr = GCHandle.Alloc (socketInfo.inBuffer, GCHandleType.Pinned).AddrOfPinnedObject ();
+				readPtrToObj<ushort> (ref ptr, ref socketInfo.msgId);
+				readPtrToObj<ushort> (ref ptr, ref socketInfo.nBytes);
+				readPtrToObj<uint> (ref ptr, ref socketInfo.incomingFrame);
+				if(socketInfo.currentFrame < socketInfo.incomingFrame) {
+					socketInfo.currentFrame = socketInfo.incomingFrame;
+					// Swap inBuffer and currentPacket
+					socketInfo.temp = socketInfo.currentPacket;
+					socketInfo.currentPacket = socketInfo.inBuffer;
+					socketInfo.inBuffer = socketInfo.temp;
 				}
 				if (stopReceive) {
 					break;
@@ -158,7 +149,6 @@ namespace AssemblyCSharp
 		// Read the current raw byte[] and load the values into the NatNatPkt.
 		private void loadPacket (byte[] buffer, ref NatNetPkt pkt)
 		{
-			nPackets++;
 			IntPtr ptr = GCHandle.Alloc (buffer, GCHandleType.Pinned).AddrOfPinnedObject ();
 			readPtrToObj (ref ptr, ref pkt.ID);
 			readPtrToObj (ref ptr, ref pkt.nBytes);
@@ -201,7 +191,6 @@ namespace AssemblyCSharp
 			readPtrToObj (ref ptr, ref pkt.nSkeletons);
 			readPtrToObj (ref ptr, ref pkt.latency);
 			readPtrToObj (ref ptr, ref pkt.timeCode);
-			natNetPkt_filled = true;
 		}
 		private void readPtrToObj<T> (ref IntPtr ptr, ref T obj)
 		{
