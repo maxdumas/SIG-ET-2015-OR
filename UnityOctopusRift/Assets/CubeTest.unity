@@ -691,11 +691,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c718c0563d21c4546a53ee031b60302d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ovrCamera: {fileID: 1670410271}
-  playerSphereController: {fileID: 1902691691}
-  nPlayers: 2
-  zAdjust: -.25
-  id: 1
 --- !u!4 &952712690
 Transform:
   m_ObjectHideFlags: 0
@@ -1374,8 +1369,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   id: 1
-  nPlayers: 2
+  nObjects: 0
+  playerIDs: 
   playerSphere: {fileID: 424442, guid: b0cf0812d593e410b8a062a3b423ddd0, type: 2}
+  mStream: {fileID: 952712689}
+  ovrCamera: {fileID: 1670410271}
+  zAdjust: 0
 --- !u!4 &1902691692
 Transform:
   m_ObjectHideFlags: 0

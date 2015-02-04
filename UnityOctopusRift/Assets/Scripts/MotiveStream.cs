@@ -9,13 +9,8 @@ using System.Runtime.InteropServices;
 
 namespace AssemblyCSharp
 {
-	class MotiveStream : MonoBehaviour
+	public class MotiveStream : MonoBehaviour
 	{
-		public OVRCameraController ovrCamera;
-		public PlayerSphereController playerSphereController;
-		public int nPlayers;
-		public float zAdjust;
-		public int id;
 		private SocketInfo socketInfo; // The packet received/filled asychronously.
 		private NatNetPkt natNetPkt; // The parsed Motive packet.
 		private uint natNetPkt_SequenceNumber;
@@ -82,27 +77,6 @@ namespace AssemblyCSharp
 			if (natNetPkt.frame != socketInfo.currentFrame) {
 				loadPacket (socketInfo.currentPacket, ref natNetPkt);
 			}
-			
-			Vector3 newPos = natNetPkt.rigidBodies [id].pos.AsVector3;
-			ovrCamera.transform.rotation = natNetPkt.rigidBodies [id].rot;
-			newPos.x *= -1;
-
-			Vector3 forward = ovrCamera.transform.forward;
-			forward.x *= -1;
-			newPos += zAdjust * forward;
-
-			ovrCamera.transform.position = newPos;
-			ovrCamera.transform.rotation = natNetPkt.rigidBodies [id].rot;
-
-			Vector3[] positions = new Vector3[nPlayers];
-			Quaternion[] rotations = new Quaternion[nPlayers];
-			for (int i = 0; i < nPlayers; i++) {
-				Vector3 pos = natNetPkt.rigidBodies[i].pos.AsVector3;
-				pos.x *= -1;
-				positions[i] = pos;
-				rotations[i] = natNetPkt.rigidBodies[i].rot;
-			}
-			playerSphereController.SetBodyData(positions, rotations);
 
 			float round_accum = (float)Math.Floor(accum);
 			if (round_accum > 0) {
@@ -114,6 +88,12 @@ namespace AssemblyCSharp
 			}
 
 			nFrames++;
+		}
+		public Vector3 getRigidBodyPosData(int index) {
+			return natNetPkt.rigidBodies[index].pos.AsVector3;
+		}
+		public Quaternion getRigidBodyRotData(int index) {
+			return natNetPkt.rigidBodies[index].rot;
 		}
 		// This thread handles incoming NatNet packets.
 		private void ThreadRun ()
