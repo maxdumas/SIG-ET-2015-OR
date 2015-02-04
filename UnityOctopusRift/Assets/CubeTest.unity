@@ -165,9 +165,9 @@ Camera:
     y: 0
     width: 1
     height: 1
-  near clip plane: .150000006
-  far clip plane: 1000
-  field of view: 90
+  near clip plane: .0500000007
+  far clip plane: 10
+  field of view: 135
   orthographic: 0
   orthographic size: 100
   m_Depth: 1
@@ -694,9 +694,7 @@ MonoBehaviour:
   ovrCamera: {fileID: 1670410271}
   playerSphereController: {fileID: 1902691691}
   nPlayers: 2
-  xAdjust: .100000001
-  yAdjust: -.699999988
-  zAdjust: -.200000003
+  zAdjust: -.25
   id: 1
 --- !u!4 &952712690
 Transform:
@@ -921,6 +919,38 @@ Prefab:
       propertyPath: CameraRootPosition.x
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 11400010, guid: 9da535ecc7e009544bd58323d6696a4d, type: 2}
+      propertyPath: nearClipPlane
+      value: .0500000007
+      objectReference: {fileID: 0}
+    - target: {fileID: 11400010, guid: 9da535ecc7e009544bd58323d6696a4d, type: 2}
+      propertyPath: farClipPlane
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 2000002, guid: 9da535ecc7e009544bd58323d6696a4d, type: 2}
+      propertyPath: field of view
+      value: 135
+      objectReference: {fileID: 0}
+    - target: {fileID: 2000000, guid: 9da535ecc7e009544bd58323d6696a4d, type: 2}
+      propertyPath: field of view
+      value: 135
+      objectReference: {fileID: 0}
+    - target: {fileID: 2000002, guid: 9da535ecc7e009544bd58323d6696a4d, type: 2}
+      propertyPath: near clip plane
+      value: .0500000007
+      objectReference: {fileID: 0}
+    - target: {fileID: 2000002, guid: 9da535ecc7e009544bd58323d6696a4d, type: 2}
+      propertyPath: far clip plane
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 2000000, guid: 9da535ecc7e009544bd58323d6696a4d, type: 2}
+      propertyPath: near clip plane
+      value: .0500000007
+      objectReference: {fileID: 0}
+    - target: {fileID: 2000000, guid: 9da535ecc7e009544bd58323d6696a4d, type: 2}
+      propertyPath: far clip plane
+      value: 10
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 9da535ecc7e009544bd58323d6696a4d, type: 2}
   m_RootGameObject: {fileID: 1670410269}
@@ -1092,9 +1122,9 @@ Camera:
     y: 0
     width: 1
     height: 1
-  near clip plane: .150000006
-  far clip plane: 1000
-  field of view: 90
+  near clip plane: .0500000007
+  far clip plane: 10
+  field of view: 135
   orthographic: 0
   orthographic size: 100
   m_Depth: 0
@@ -1230,8 +1260,8 @@ MonoBehaviour:
   FreezeTimeWarp: 0
   FlipCorrectionInY: 0
   backgroundColor: {r: 0, g: 0, b: 0, a: 1}
-  nearClipPlane: .150000006
-  farClipPlane: 1000
+  nearClipPlane: .0500000007
+  farClipPlane: 10
 --- !u!4 &1670410272
 Transform:
   m_ObjectHideFlags: 0
@@ -1343,6 +1373,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: debd9174eb8cf4ac6b4f66c5432a3768, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  id: 1
   nPlayers: 2
   playerSphere: {fileID: 424442, guid: b0cf0812d593e410b8a062a3b423ddd0, type: 2}
 --- !u!4 &1902691692

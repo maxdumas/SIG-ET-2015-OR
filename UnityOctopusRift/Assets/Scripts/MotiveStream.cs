@@ -14,8 +14,6 @@ namespace AssemblyCSharp
 		public OVRCameraController ovrCamera;
 		public PlayerSphereController playerSphereController;
 		public int nPlayers;
-		public float xAdjust;
-		public float yAdjust;
 		public float zAdjust;
 		public int id;
 		private AsyncPkt asyncPkt; // The packet received/filled asychronously.
@@ -90,7 +88,11 @@ namespace AssemblyCSharp
 			Vector3 newPos = natNetPkt.rigidBodies [id].pos.AsVector3;
 			ovrCamera.transform.rotation = natNetPkt.rigidBodies [id].rot;
 			newPos.x *= -1;
-			newPos += -0.15f * ovrCamera.transform.forward;
+
+			Vector3 forward = ovrCamera.transform.forward;
+			forward.x *= -1;
+			newPos += zAdjust * forward;
+
 			ovrCamera.transform.position = newPos;
 			ovrCamera.transform.rotation = natNetPkt.rigidBodies [id].rot;
 
@@ -101,9 +103,6 @@ namespace AssemblyCSharp
 				pos.x *= -1;
 				positions[i] = pos;
 				rotations[i] = natNetPkt.rigidBodies[i].rot;
-				if (i != id) {
-					print ("dist to camera: " + Vector3.Distance(ovrCamera.transform.position, positions[i]).ToString());
-				}
 			}
 			playerSphereController.SetBodyData(positions, rotations);
 
