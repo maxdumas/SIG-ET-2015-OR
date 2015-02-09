@@ -5,7 +5,7 @@ EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Scenes:
-  - enabled: 1
+  - enabled: 0
     path: Assets/CubeTest.unity
   - enabled: 0
     path: Assets/Scenes/Startup_Sample.unity
@@ -13,3 +13,7 @@ EditorBuildSettings:
     path: Assets/Scenes/Box_Room.unity
   - enabled: 0
     path: Assets/FPSCounter.unity
+  - enabled: 1
+    path: Assets/CustomParticleTests.unity
+  - enabled: 0
+    path: Assets/DefaultParticleTests.unity
